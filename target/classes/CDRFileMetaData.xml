@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+ <FileDefinition ID='6' Name='PGW CDR New' RowTerminator='0x0A' FieldTerminator=';'>
+     
+      <Field Position='1' Name='ExchangeID' Type='string' />
+      <Field Position='2' Name='RecordID' Type='string'/>
+      <Field Position='3' Name='IncomingRoute' Type='string'/>
+      <Field Position='4' Name='OutcomingRoute' Type='string' />
+      <Field Position='5' Name='ASubscriberNumber' Type='string' />
+      <Field Position='6' Name='BSubscriberNumber' Type='string' />
+      <Field Position='7' Name='DateForStartCharge' Type='string' />
+      <Field Position='8' Name='TimeForStartCharge' Type='string' />
+      <Field Position='9' Name='CharegeableDuration' Type='string' />
+      <Field Position='10' Name='CauseCode' Type='string' />
+      <Field Position='11' Name='PortingIDMobofANum' Type='string' />
+      <Field Position='12' Name='PortingIDMobofBNum' Type='string' />  
+      <Field Position='13' Name='PortingIDFixofANum' Type='string'/>
+      <Field Position='14' Name='PortingIDFixofBNum' Type='string'/>
+      <Field Position='15' Name='InitialCodec' Type='string' />
+      <Field Position='16' Name='FinalCodec' Type='string' />
+     
+</FileDefinition>

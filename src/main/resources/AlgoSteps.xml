@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Algorithm ID='7' Name='Internation Reprocess'>
+
+	<!-- <SubAlgorithm ID='13' Name='International Reprocess'> -->
+	<SubAlgorithm ID='13' Name='International Reprocess'
+		LoopDef="1">
+		<Step ID='7' Name='Resolve Trunk' ProcedureCall='exec bspCDRTrunkResolve_NGN'
+			StepOrder='30' IsLoop='true' IsIXBill='true' IsParallel='false'
+			PreviousStepID='-1'>
+			<SubStep type="sqlQuery" orderID="1" virtualSwitch="Yes">
+				SELECT
+				A.RegistryID as RegistryIDOther, A.BERID
+				as
+				BERIDOther, T.TrunkID AS
+				InTrunkID, T.TrunkTypeID AS
+				InTrunkTypeID,
+				T.SuperTrunkID AS
+				InCommercialTrunkID
+				FROM
+				wtbECRTemp A
+				INNER JOIN wtbTrunk
+				T
+				ON A.InTrunkName =
+				T.CDRMatch WHERE
+				T.DirectionID IN (3,
+				2) AND ProcessInbound
+				IS NULL
+			</SubStep>
+			<SubStep type="sqlQuery" orderID="2" virtualSwitch="Yes">
+				SELECT
+				A.RegistryID as RegistryIDOther, A.BERID
+				as
+				BERIDOther, T.TrunkID AS
+				OutTrunkID, T.TrunkTypeID AS
+				OutTrunkTypeID,
+				T.SuperTrunkID AS
+				OutCommercialTrunkID 
+				FROM
+				wtbECRTemp A 
+				INNER JOIN wtbTrunk
+				T 
+				ON A.OutTrunkName =
+				T.CDRMatch WHERE T.DirectionID IN (3,
+				1) AND
+				ProcessOutbound IS NULL
+			</SubStep>
+			<SubStep type="sqlQuery" orderID="1" virtualSwitch="No">
+				SELECT
+				A.RegistryID as RegistryIDOther, A.BERID
+				as
+				BERIDOther, T.TrunkID AS
+				InTrunkID, T.TrunkTypeID AS
+				InTrunkTypeID,
+				T.SuperTrunkID AS
+				InCommercialTrunkID 
+				FROM
+				wtbECRTemp A 
+				INNER JOIN wtbTrunk
+				T ON A.InTrunkName =
+				T.CDRMatch 
+				AND	A.InSwitchID =
+				T.SwitchID WHERE
+				T.DirectionID IN (3, 2) AND ProcessInbound
+				IS NULL
+			</SubStep>
+			<SubStep type="sqlQuery" orderID="2" virtualSwitch="No">
+				SELECT
+				A.RegistryID as RegistryIDOther, A.BERID
+				as
+				BERIDOther, T.TrunkID AS
+				OutTrunkID, T.TrunkTypeID AS
+				OutTrunkTypeID,
+				T.SuperTrunkID AS
+				OutCommercialTrunkID
+				FROM
+				wtbECRTemp A 
+				INNER JOIN wtbTrunk
+				T 
+				ON A.OutTrunkName =
+				T.CDRMatch
+				AND
+				A.OutSwitchID =
+				T.SwitchID 
+				WHERE
+				T.DirectionID IN (3, 1)
+				AND
+				ProcessOutbound IS NULL
+			</SubStep>
+			<SubStep type="registerTempTable" orderID="3" virtualSwitch="NA">
+				ecrs_in
+			</SubStep>
+			<SubStep type="registerTempTable" orderID="4" virtualSwitch="NA">
+				ecrs_out
+			</SubStep>
+			<SubStep type="sqlQuery" orderID="5" virtualSwitch="NA">
+				SELECT
+				InSwitchID, InTrunkName,
+				InternalOutTrunkName,
+				InternalInTrunkName,
+				OutTrunkName, OutSwitch,
+				CallingNumber,
+				OriginalCalledNumber,
+				CalledNumber, CallType,
+				CallDate, CallHour,
+				CallMinute, CallSecond,
+				CallDuration,
+				CircuitDuration, Answered,
+				Seized, FaultCode, RingBusy,
+				UserBusy,
+				TerminalReject, SeqNum,
+				RegistryID, BERID,
+				OutSwitchID,
+				PartitionID, CallTypeID,
+				CDRDirectionID,
+				InAgreementID, InAccountID,
+				InNumberPlanID,
+				InDestinationID,
+				InCountryID, InCallCharID,
+				InServiceID, InProductID,
+				InServiceLevelID, InRouteClassID,
+				OutAgreementID,
+				OutAccountID, OutNumberPlanID,
+				OutDestinationID, OutCountryID,
+				OutCallCharID, OutServiceID,
+				OutProductID, OutServiceLevelID,
+				OutRouteClassID,
+				RoutingDestinationID, RoutingCalendarID,
+				RoutingDateTimeBandID,
+				RoutingProductID, RoutingServiceID,
+				RoutingCallCharID,
+				InEventCaseID,
+				InCaseRatingMethodID,
+				OutEventCaseID, OutCaseRatingMethodID,
+				CaseRatingMethodID,
+				CDRTariffTypeCombinationID, UsedForVSR,
+				InBoundClosed,
+				OutBoundClosed, InAccountingTreatment,
+				OutAccountingTreatment, NPRN,
+				CustomField1, CustomField2,
+				CustomField3, InRefDestinationID,
+				NetworkCode,
+				Portability_PreresolvedFlag, PortedFlag, OriginID,
+				PortedFromID,
+				PortedToID, PortedDestinationID, InJitter, OutJitter,
+				InPacketDelay,
+				OutPacketDelay, InPacketLoss, OutPacketLoss, InMOS,
+				OutMOS,
+				InternalCodec, InExternalCodec, OutExternalCodec,
+				InternalCodecNumber, InExternalCodecNumber, OutExternalCodecNumber,
+				CustomField4, CustomField5, CustomField6, CustomField7,
+				CustomField8,
+				CustomField9, CustomField10, CustomField11,
+				CustomField12,
+				tmpCalledNumber1, tmpCalledNumber2, tmpCalledNumber3,
+				tmpCalledNumber4, tmpCalledNumber5, tmpCalledNumber6,
+				tmpCalledNumber7, tmpCalledNumber8, tmpCalledNumber9,
+				tmpCalledNumber10, tmpCalledNumber11, tmpCalledNumber12,
+				tmpCalledNumber13, tmpCalledNumber14, tmpCalledNumber15,
+				tmpCalledNumber16, tmpCalledNumber17, tmpCalledNumber18,
+				tmpOtherNumber1, tmpOtherNumber2, tmpOtherNumber3, tmpOtherNumber4,
+				tmpOtherNumber5, tmpOtherNumber6, tmpOtherNumber7, tmpOtherNumber8,
+				tmpOtherNumber9, tmpOtherNumber10, tmpOtherNumber11,
+				tmpOtherNumber12, tmpOtherNumber13, tmpOtherNumber14,
+				tmpOtherNumber15, tmpOtherNumber16, tmpOtherNumber17,
+				tmpOtherNumber18, InSettlementDate, OutSettlementDate,
+				InSettlementDateTime, OutSettlementDateTime,
+				InSettlementTimeZoneShift, OutSettlementTimeZoneShift, InUNPID,
+				InAccountingNumberPlanID, InAccountingDestinationID,
+				InAccountingEventCaseID, InContractID, InisOperationalFTR,
+				InisAccountingFTR, InisMissingFTR, OutUNPID,
+				OutAccountingNumberPlanID, OutAccountingDestinationID,
+				OutAccountingEventCaseID, OutContractID, OutisOperationalFTR,
+				OutisAccountingFTR, OutisMissingFTR, InAccountingContractID,
+				OutAccountingContractID, InAccountingCallCharID,
+				OutAccountingCallCharID, InAccountingServiceID,
+				OutAccountingServiceID, InAccountingProductID,
+				OutAccountingProductID, RoutingDestinationTypeID,
+				InProvisionalStatementID, OutProvisionalStatementID, CustomField13,
+				CustomField14, CustomField15, CustomField16, CustomField17,
+				CustomField18, CustomField19, CustomField20, CustomField21,
+				CustomField22, CustomField23, CustomField24, CustomField25,
+				CustomField26, CustomField27, CustomField28, CustomFieldD1,
+				CustomFieldD2, CustomFieldD3, MDD, MNPDestinationID, MNPDialCode,
+				ProcessInbound, NPANXXDialCode, UnRoundedCallDuration,
+				InAccountingCountryID, OutAccountingCountryID, InSettlementDD,
+				OutSettlementDD, InAccountingSettlementDD,
+				OutAccountingSettlementDD,
+				ProcessOutbound, InCompatibility70Flag,
+				OutCompatibility70Flag,
+				OriginCountryID, tmpCallingNumber1,
+				tmpCallingNumber2,
+				tmpCallingNumber3, tmpCallingNumber4,
+				tmpCallingNumber5,
+				tmpCallingNumber6, tmpCallingNumber7,
+				tmpCallingNumber8,
+				tmpCallingNumber9, tmpCallingNumber10,
+				tmpCallingNumber11,
+				tmpCallingNumber12, tmpCallingNumber13,
+				tmpCallingNumber14,
+				tmpCallingNumber15, tmpCallingNumber16,
+				tmpCallingNumber17,
+				tmpCallingNumber18, InGPDestinationID1,
+				InGPDestinationID2,
+				InGPDestinationID3, InGPDestinationID4,
+				OutGPDestinationID1,
+				OutGPDestinationID2, OutGPDestinationID3,
+				OutGPDestinationID4,
+				InGPContractID1, InGPContractID2,
+				InGPContractID3, InGPContractID4,
+				OutGPContractID1, OutGPContractID2,
+				OutGPContractID3,
+				OutGPContractID4, InIsOriginBasedRating,
+				OutIsOriginBasedRating FROM
+				wtbECRTemp
+
+			</SubStep>
+			<SubStep type="registerTempTable" orderID="6" virtualSwitch="NA">
+			ECR
+			</SubStep>
+			<SubStep type="sqlQuery" orderID="7" virtualSwitch="NA">
+				SELECT
+				InSwitchID, InTrunkName,
+				InternalOutTrunkName,
+				InternalInTrunkName,
+				OutTrunkName, OutSwitch,
+				CallingNumber,
+				OriginalCalledNumber,
+				CalledNumber, CallType,
+				CallDate, CallHour,
+				CallMinute, CallSecond,
+				CallDuration,
+				CircuitDuration, Answered,
+				Seized, FaultCode, RingBusy,
+				UserBusy,
+				TerminalReject, SeqNum,
+				RegistryID, BERID,
+				OutSwitchID,
+				PartitionID, CallTypeID,
+				CDRDirectionID,
+				InAgreementID, InAccountID,
+				InNumberPlanID,
+				InDestinationID,
+				InCountryID, InCallCharID,
+				InServiceID, InProductID,
+				InServiceLevelID, InRouteClassID,
+				OutAgreementID,
+				OutAccountID, OutNumberPlanID,
+				OutDestinationID, OutCountryID,
+				OutCallCharID, OutServiceID,
+				OutProductID, OutServiceLevelID,
+				OutRouteClassID,
+				RoutingDestinationID, RoutingCalendarID,
+				RoutingDateTimeBandID,
+				RoutingProductID, RoutingServiceID,
+				RoutingCallCharID,
+				InEventCaseID,
+				InCaseRatingMethodID,
+				OutEventCaseID, OutCaseRatingMethodID,
+				CaseRatingMethodID,
+				CDRTariffTypeCombinationID, UsedForVSR,
+				InBoundClosed,
+				OutBoundClosed, InAccountingTreatment,
+				OutAccountingTreatment, NPRN,
+				CustomField1, CustomField2,
+				CustomField3, InRefDestinationID,
+				NetworkCode,
+				Portability_PreresolvedFlag, PortedFlag, OriginID,
+				PortedFromID,
+				PortedToID, PortedDestinationID, InJitter, OutJitter,
+				InPacketDelay,
+				OutPacketDelay, InPacketLoss, OutPacketLoss, InMOS,
+				OutMOS,
+				InternalCodec, InExternalCodec, OutExternalCodec,
+				InternalCodecNumber, InExternalCodecNumber, OutExternalCodecNumber,
+				CustomField4, CustomField5, CustomField6, CustomField7,
+				CustomField8,
+				CustomField9, CustomField10, CustomField11,
+				CustomField12,
+				tmpCalledNumber1, tmpCalledNumber2, tmpCalledNumber3,
+				tmpCalledNumber4, tmpCalledNumber5, tmpCalledNumber6,
+				tmpCalledNumber7, tmpCalledNumber8, tmpCalledNumber9,
+				tmpCalledNumber10, tmpCalledNumber11, tmpCalledNumber12,
+				tmpCalledNumber13, tmpCalledNumber14, tmpCalledNumber15,
+				tmpCalledNumber16, tmpCalledNumber17, tmpCalledNumber18,
+				tmpOtherNumber1, tmpOtherNumber2, tmpOtherNumber3, tmpOtherNumber4,
+				tmpOtherNumber5, tmpOtherNumber6, tmpOtherNumber7, tmpOtherNumber8,
+				tmpOtherNumber9, tmpOtherNumber10, tmpOtherNumber11,
+				tmpOtherNumber12, tmpOtherNumber13, tmpOtherNumber14,
+				tmpOtherNumber15, tmpOtherNumber16, tmpOtherNumber17,
+				tmpOtherNumber18, InSettlementDate, OutSettlementDate,
+				InSettlementDateTime, OutSettlementDateTime,
+				InSettlementTimeZoneShift, OutSettlementTimeZoneShift, InUNPID,
+				InAccountingNumberPlanID, InAccountingDestinationID,
+				InAccountingEventCaseID, InContractID, InisOperationalFTR,
+				InisAccountingFTR, InisMissingFTR, OutUNPID,
+				OutAccountingNumberPlanID, OutAccountingDestinationID,
+				OutAccountingEventCaseID, OutContractID, OutisOperationalFTR,
+				OutisAccountingFTR, OutisMissingFTR, InAccountingContractID,
+				OutAccountingContractID, InAccountingCallCharID,
+				OutAccountingCallCharID, InAccountingServiceID,
+				OutAccountingServiceID, InAccountingProductID,
+				OutAccountingProductID, RoutingDestinationTypeID,
+				InProvisionalStatementID, OutProvisionalStatementID, CustomField13,
+				CustomField14, CustomField15, CustomField16, CustomField17,
+				CustomField18, CustomField19, CustomField20, CustomField21,
+				CustomField22, CustomField23, CustomField24, CustomField25,
+				CustomField26, CustomField27, CustomField28, CustomFieldD1,
+				CustomFieldD2, CustomFieldD3, MDD, MNPDestinationID, MNPDialCode,
+				ProcessInbound, NPANXXDialCode, UnRoundedCallDuration,
+				InAccountingCountryID, OutAccountingCountryID, InSettlementDD,
+				OutSettlementDD, InAccountingSettlementDD,
+				OutAccountingSettlementDD,
+				ProcessOutbound, InCompatibility70Flag,
+				OutCompatibility70Flag,
+				OriginCountryID, tmpCallingNumber1,
+				tmpCallingNumber2,
+				tmpCallingNumber3, tmpCallingNumber4,
+				tmpCallingNumber5,
+				tmpCallingNumber6, tmpCallingNumber7,
+				tmpCallingNumber8,
+				tmpCallingNumber9, tmpCallingNumber10,
+				tmpCallingNumber11,
+				tmpCallingNumber12, tmpCallingNumber13,
+				tmpCallingNumber14,
+				tmpCallingNumber15, tmpCallingNumber16,
+				tmpCallingNumber17,
+				tmpCallingNumber18, InGPDestinationID1,
+				InGPDestinationID2,
+				InGPDestinationID3, InGPDestinationID4,
+				OutGPDestinationID1,
+				OutGPDestinationID2, OutGPDestinationID3,
+				OutGPDestinationID4,
+				InGPContractID1, InGPContractID2,
+				InGPContractID3, InGPContractID4,
+				OutGPContractID1, OutGPContractID2,
+				OutGPContractID3,
+				OutGPContractID4, InIsOriginBasedRating,
+				OutIsOriginBasedRating,
+				ecrIn.InTrunkID, ecrIn.InTrunkTypeID,
+				ecrIn.InCommercialTrunkID,
+				ecrOut.OutTrunkID, ecrOut.OutTrunkTypeID,
+				ecrOut.OutCommercialTrunkID
+				FROM ECR m left join ecrs_in ecrIn on
+				m.RegistryID = ecrIn.RegistryIDOther and
+				m.BERID = ecrIn.BERIDOther left join ecrs_out
+				ecrOut on m.RegistryID = ecrOut.RegistryIDOther and
+				m.BERID	= ecrOut.BERIDOther
+			</SubStep>
+			<SubStep type="registerTempTable" orderID="8" virtualSwitch="NA">
+				wtbECRTemp
+			</SubStep>
+		</Step>
+		<Step ID='34' Name='Resolve Agreement' ProcedureCall='exec bspCDRAgreementResolve_NGN'
+			StepOrder='40' IsLoop='true' IsIXBill='true' IsParallel='false'
+			PreviousStepID='-1'>
+
+			<SubStep type="sqlQuery" orderID="1">
+				SELECT A.RegistryID as
+				RegistryIDOther, A.BERID as BERIDOther,
+				P.AgreementID as InAgreementID,P.AccountID as InAccountID 
+				FROM wtbECRTemp A INNER JOIN
+				wtbAgreementPOI P ON A.InCommercialTrunkID = P.TrunkID 
+				WHERE P.POIDirectionID IN (2,3)
+				AND ProcessInbound IS NULL
+			</SubStep>
+			<SubStep type="sqlQuery" orderID="2">
+				SELECT A.RegistryID as
+				RegistryIDOther, A.BERID as BERIDOther,P.AgreementID as OutAgreementID,P.AccountID as OutAccountID 
+				FROM wtbECRTemp A INNER	JOIN wtbAgreementPOI P 
+				ON A.OutCommercialTrunkID = P.TrunkID 
+				WHERE P.POIDirectionID in (1,3) 
+				AND ProcessOutbound IS NULL
+			</SubStep>
+			<SubStep type="registerTempTable" orderID="3">
+				agr_in
+			</SubStep>
+			<SubStep type="registerTempTable" orderID="4">
+				agr_out
+			</SubStep>
+			<SubStep type="sqlQuery" orderID="5">
+				SELECT RegistryID,
+				InSwitchID, InTrunkName,
+				InternalOutTrunkName, InternalInTrunkName,
+				OutTrunkName, OutSwitch,
+				CallingNumber, OriginalCalledNumber,CalledNumber, CallType,
+				CallDate, CallHour, CallMinute, CallSecond,
+				CallDuration,
+				CircuitDuration, Answered, Seized, FaultCode, RingBusy,
+				UserBusy,
+				TerminalReject, SeqNum,BERID, OutSwitchID,
+				PartitionID, CallTypeID,
+				CDRDirectionID, InNumberPlanID,
+				InDestinationID, InCountryID,
+				InCallCharID, InServiceID, InProductID,
+				InServiceLevelID, InRouteClassID, OutNumberPlanID,
+				OutDestinationID, OutCountryID,
+				OutCallCharID, OutServiceID,
+				OutProductID, OutServiceLevelID,
+				OutRouteClassID,
+				RoutingDestinationID, RoutingCalendarID,RoutingDateTimeBandID,
+				RoutingProductID, RoutingServiceID,
+				RoutingCallCharID, InEventCaseID,
+				InCaseRatingMethodID,
+				OutEventCaseID, OutCaseRatingMethodID,
+				CaseRatingMethodID,CDRTariffTypeCombinationID, UsedForVSR,
+				InBoundClosed,
+				OutBoundClosed, InAccountingTreatment,
+				OutAccountingTreatment, NPRN,
+				CustomField1, CustomField2,
+				CustomField3, InRefDestinationID, NetworkCode,
+				Portability_PreresolvedFlag, PortedFlag, OriginID,
+				PortedFromID,
+				PortedToID, PortedDestinationID, InJitter, OutJitter,
+				InPacketDelay,
+				OutPacketDelay, InPacketLoss,OutPacketLoss, InMOS, OutMOS,
+				InternalCodec, InExternalCodec, OutExternalCodec,
+				InternalCodecNumber, InExternalCodecNumber, OutExternalCodecNumber,
+				CustomField4, CustomField5,CustomField6, CustomField7,
+				CustomField8, CustomField9, CustomField10,
+				CustomField11,
+				CustomField12, tmpCalledNumber1, tmpCalledNumber2,
+				tmpCalledNumber3,
+				tmpCalledNumber4, tmpCalledNumber5,tmpCalledNumber6,
+				tmpCalledNumber7, tmpCalledNumber8,
+				tmpCalledNumber9,
+				tmpCalledNumber10, tmpCalledNumber11,
+				tmpCalledNumber12,
+				tmpCalledNumber13, tmpCalledNumber14,
+				tmpCalledNumber15,tmpCalledNumber16, tmpCalledNumber17, tmpCalledNumber18,
+				tmpOtherNumber1,
+				tmpOtherNumber2, tmpOtherNumber3, tmpOtherNumber4,
+				tmpOtherNumber5,
+				tmpOtherNumber6, tmpOtherNumber7,tmpOtherNumber8, tmpOtherNumber9, tmpOtherNumber10,
+				tmpOtherNumber11,
+				tmpOtherNumber12, tmpOtherNumber13,
+				tmpOtherNumber14,
+				tmpOtherNumber15, tmpOtherNumber16,
+				tmpOtherNumber17,tmpOtherNumber18, InSettlementDate,
+				OutSettlementDate,
+				InSettlementDateTime, OutSettlementDateTime,
+				InSettlementTimeZoneShift, OutSettlementTimeZoneShift, InUNPID,InAccountingNumberPlanID, InAccountingDestinationID,
+				InAccountingEventCaseID, InContractID, InisOperationalFTR,
+				InisAccountingFTR, InisMissingFTR, OutUNPID,OutAccountingNumberPlanID, OutAccountingDestinationID,
+				OutAccountingEventCaseID, OutContractID, OutisOperationalFTR,
+				OutisAccountingFTR, OutisMissingFTR, InAccountingContractID,OutAccountingContractID, InAccountingCallCharID,
+				OutAccountingCallCharID, InAccountingServiceID,
+				OutAccountingServiceID, InAccountingProductID,
+				OutAccountingProductID,RoutingDestinationTypeID,
+				InProvisionalStatementID, OutProvisionalStatementID, CustomField13,
+				CustomField14, CustomField15, CustomField16, CustomField17,
+				CustomField18,CustomField19, CustomField20, CustomField21,
+				CustomField22, CustomField23,
+				CustomField24, CustomField25,
+				CustomField26, CustomField27,
+				CustomField28, CustomFieldD1,CustomFieldD2, CustomFieldD3, MDD, MNPDestinationID, MNPDialCode,
+				ProcessInbound,
+				NPANXXDialCode, UnRoundedCallDuration,
+				InAccountingCountryID,
+				OutAccountingCountryID,InSettlementDD,
+				OutSettlementDD, InAccountingSettlementDD,
+				OutAccountingSettlementDD, ProcessOutbound, InCompatibility70Flag,
+				OutCompatibility70Flag, OriginCountryID,tmpCallingNumber1,
+				tmpCallingNumber2, tmpCallingNumber3, tmpCallingNumber4,
+				tmpCallingNumber5, tmpCallingNumber6, tmpCallingNumber7,
+				tmpCallingNumber8, tmpCallingNumber9,tmpCallingNumber10,
+				tmpCallingNumber11, tmpCallingNumber12, tmpCallingNumber13,
+				tmpCallingNumber14, tmpCallingNumber15, tmpCallingNumber16,
+				tmpCallingNumber17, tmpCallingNumber18,InGPDestinationID1,
+				InGPDestinationID2, InGPDestinationID3, InGPDestinationID4,
+				OutGPDestinationID1, OutGPDestinationID2, OutGPDestinationID3,
+				OutGPDestinationID4, InGPContractID1,InGPContractID2,
+				InGPContractID3, InGPContractID4, OutGPContractID1,
+				OutGPContractID2, OutGPContractID3, OutGPContractID4,
+				InIsOriginBasedRating, OutIsOriginBasedRating,InTrunkID,
+				InTrunkTypeID, InCommercialTrunkID, OutTrunkID,
+				OutTrunkTypeID,
+				OutCommercialTrunkID,ai.InAgreementID, ai.InAccountID,
+				ao.OutAgreementID, ao.OutAccountID FROM wtbECRTemp m LEFT JOIN agr_in
+				ai ON m.RegistryID = ai.RegistryIDOther
+				AND m.BERID = ai.BERIDOther 
+				LEFT JOIN agr_out ao ON m.RegistryID = ao.RegistryIDOther AND m.BERID =
+				ao.BERIDOther
+			</SubStep>
+			<SubStep type="registerTempTable" orderID="6">
+				wtbECRTemp
+			</SubStep>
+		</Step>
+
+	</SubAlgorithm>
+
+</Algorithm>	

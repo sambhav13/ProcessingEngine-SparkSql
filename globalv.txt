@@ -1,0 +1,7 @@
+ProcessLogID,int,4204829
+RegistryID,int,2382874
+SwitchID,int,3
+ProcessInbound,int,1
+ProcessOutbound,int,1
+InboundReferenceNumberPlanID,int,null
+OutboundReferenceNumberPlanID,int,null

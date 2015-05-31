@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Algorithm ID='13' Name=''>
+
+	<SubAlgorithm ID='1' Name='Import' LoopDef='0'>
+
+		<Step ID='22' Name='Global Variables' ProcedureCall='exec bspPopulateGlobalVariables' StepOrder='100' IsIXBill='true'/>
+		<Step ID='1'  Name='File Clean Up'    ProcedureCall='exec bspFileCleanup'             StepOrder='200' IsIXBill='false'/>
+		<Step ID='2'  Name='Table Clean Up'   ProcedureCall='exec bspTableCleanup'            StepOrder='300' IsIXBill='false'/>
+		<Step ID='3'  Name='Import CDR File'  ProcedureCall='exec bspFileImport'              StepOrder='400' IsIXBill='false'/>
+		<Step ID='47' Name='Trim'             ProcedureCall='exec bspFileTrim'                StepOrder='500' IsIXBill='false'/>
+		<Step ID='48' Name='Pre Standardize'  ProcedureCall='exec bspFilePreStandardize'      StepOrder='600' IsIXBill='false'/>
+		<Step ID='87' Name='Table Import'     ProcedureCall='exec bspTableImport'             StepOrder='650' IsIXBill='false'/>
+		
+	</SubAlgorithm>
+
+	<SubAlgorithm ID='2' Name='Update Reference Data' LoopDef='0'>
+
+		<Step ID='4' Name='Synch Ref Data' ProcedureCall='exec bspReferenceDataSubscription' StepOrder='1' IsIXBill='false'/>
+		<Step ID='23' Name='Date Loop'     ProcedureCall='exec bspSubAlgorithmLoop'          StepOrder='5' IsIXBill='false'/>	
+
+	</SubAlgorithm>
+
+	<SubAlgorithm ID='11' Name='International CDR File Load' LoopDef='1'>
+
+		<Step ID='6'  Name='Locate Rated Table' ProcedureCall='exec bspDynamicTableExtension'   StepOrder='5'   IsIXBill='false'/>
+		<Step ID='33' Name='Standardize-Int'    ProcedureCall='exec bspFileStandardize'	        StepOrder='10'  IsIXBill='true'/>
+		<Step ID='76' Name='Customize Pre Billing Statement' ProcedureCall='exec bspCustomizePreCDRCycleResolve' StepOrder='125' IsIXBill='false'/>
+		<Step ID='75' Name='Resolve Billing Statement' ProcedureCall='exec bspCDRCycleResolve'  StepOrder='126' IsIXBill='true'/>
+		<Step ID='51' Name='Customize Pre Summarization' ProcedureCall='exec bspCustomizePreSummarization' StepOrder='128' IsIXBill='false'/>
+		<Step ID='19' Name='Summarize'          ProcedureCall= 'exec bspTableSummarize'         StepOrder='130' IsIXBill='true'/>
+		<Step ID='49' Name='Reject Table'       ProcedureCall= 'exec bspTableReject'            StepOrder='135' IsIXBill='false'/>	
+		<Step ID='20' Name='Transfer'           ProcedureCall= 'exec bspTableTransfer'          StepOrder='140' IsIXBill='true'/>
+
+	</SubAlgorithm>
+
+	<SubAlgorithm ID='4' Name='Wrap Up' LoopDef='0'>
+
+		<Step ID='65' Name='Post transfer'   ProcedureCall='Exec bspCustomizeCDRPostTransfer'   StepOrder='100' IsIXBill='false'/>
+		<Step ID='21' Name='Drop Raw Table'  ProcedureCall='exec bspFileDropRaw'                StepOrder='200' IsIXBill='false'/>
+		<Step ID='88' Name='Table Export'    ProcedureCall='exec bspTableExport'                StepOrder='300' IsIXBill='false'/>
+
+	</SubAlgorithm>
+
+</Algorithm>
+
+
+<Algorithm ID='15' Name=''>
+
+	<SubAlgorithm ID='16' Name='' LoopDef='0'>
+
+		<Step ID='22' Name='Global Variables' ProcedureCall='exec bspPopulateGlobalVariables'   StepOrder='0' IsIXBill='true'/>
+		<Step ID='31' Name='Partition Loop'   ProcedureCall='exec bspSubAlgorithmLoop_onPartitions' StepOrder='20' IsIXBill='false'/>
+	
+	</SubAlgorithm>
+
+	<SubAlgorithm ID='19' Name='International Reprocess' LoopDef='2'>
+
+		<Step ID='30' Name='Table Get Partition' ProcedureCall='exec bspTableGet_partitions'   StepOrder='4'  IsIXBill='false'/>
+		<Step ID='6'  Name='Locate Rated Table'  ProcedureCall='exec bspDynamicTableExtension' StepOrder='5'  IsIXBill='false'/>
+		<Step ID='92' Name='Resolve SMS Calls'   ProcedureCall='exec bspStandardizeSMSCallResolve' StepOrder='10' IsIXBill='false'/>
+		<Step ID='57' Name='Customize Pre Trunk Resolve' ProcedureCall='exec bspCustomizePreCDRTrunkResolve' StepOrder='20' IsIXBill='false'/>
+
+		<Step ID='96' Name='NGN Test Create worktables' ProcedureCall='exec bspCreateWorkTables_NGN' StepOrder='25' IsIXBill='false' />	
+		<Step ID='97' Name='NGN Test Exec JAVA' ProcedureCall='exec bspExecuteJava_NGN' StepOrder='30' IsIXBill='false'/>	
+		<Step ID='98' Name='NGN Test Export CDRs' ProcedureCall='exec bspExportWorktables_NGN' StepOrder='35' IsIXBill='false'/>
+
+		<Step ID='94' Name='Resolve Origin Country' ProcedureCall='exec bspCDROriginCountryResolve' StepOrder='45' IsIXBill='false'/>
+		<Step ID='35' Name='Resolve Destination' ProcedureCall='exec bspCDRDestinationResolve' StepOrder='50' IsIXBill='true'/>
+		<Step ID='81' Name='Post Routing Destination Resolve' ProcedureCall='exec bspCustomizeCDRPostRoutingDestinationResolve' StepOrder='51' IsIXBill='false'/>
+		<Step ID='71' Name='Resolve MDD' ProcedureCall='exec bspCDRMDDResolve' StepOrder='52' IsIXBill='false'/>
+		<Step ID='72' Name='Resolve NPA NXX DialCode' ProcedureCall='exec bspCDRNPANXXDialCodeResolve' StepOrder='53' IsIXBill='false'/>
+		<Step ID='73' Name='Resolve Monitored Numberplan' ProcedureCall='exec bspCDRMNPDestinationResolve' StepOrder='54' IsIXBill='false'/>
+		<Step ID='46' Name='Resolve Service' ProcedureCall='exec bspCDRServiceResolve' StepOrder='55' IsIXBill='true'/>
+		<Step ID='38' Name='Resolve Routing Date Time Band' ProcedureCall='exec bspCDRRoutingDateTimeBandResolve' StepOrder='60' IsIXBill='true'/>
+		<Step ID='36' Name='Resolve Product' ProcedureCall='exec bspCDRProductResolve' StepOrder='65' IsIXBill='true'/>
+		<Step ID='61' Name='Resolve Settlement Date' ProcedureCall='exec bspCDRSettlementDateResolve' StepOrder='70' IsIXBill='false'/>
+		<Step ID='86' Name='Pre Contract Compatibility Flag Resolve' ProcedureCall='exec bspCustomizePreCDRCompatibilityFlagResolve' StepOrder='73' IsIXBill='false'/>
+		<Step ID='85' Name='Resolve Contract Compatibility Flag' ProcedureCall='exec bspCDRCompatibilityFlagResolve' StepOrder='74' IsIXBill='false'/>
+		<Step ID='66' Name='Resolve Unified Number Plan' ProcedureCall='Exec bspCDRUNPResolve' StepOrder='75' IsIXBill='false'/>
+		<Step ID='77' Name='Customize Post UNP Resolve'  ProcedureCall='exec bspCustomizePostCDRUNPResolve' StepOrder='80' IsIXBill='false'/>
+		<Step ID='67' Name='Resolve Complex Settlement Destination' ProcedureCall='Exec bspCDRSettlementDestinationResolve' StepOrder='85' IsIXBill='true'/>
+		<Step ID='50' Name='Customize Pre Event Case Resolve' ProcedureCall='exec bspCustomizePreEventCaseResolve' StepOrder='90' IsIXBill='false'/>
+		<Step ID='15' Name='Resolve Event Case' ProcedureCall='exec bspEventCaseResolve' StepOrder='100' IsIXBill='true'/>
+		<Step ID='24' Name='Generate FTRs' ProcedureCall='exec bspGenerateFTR' StepOrder='109' IsIXBill='false'/>
+		<Step ID='83' Name='Post Generate FTR' ProcedureCall='exec bspCustomPostGenerateFTR' StepOrder='110' IsIXBill='false'/>
+		<Step ID='68' Name='Ported Treatment Resolve' ProcedureCall='Exec bspCDRPortedTreatmentResolve' StepOrder='111' IsIXBill='false'/>
+		<Step ID='53' Name='Resolve Settlement Destination' ProcedureCall='exec bspCDRSettlementDestinationResolve70' StepOrder='112' IsIXBill='false'/>
+		<Step ID='82' Name='Post Settlement Destination Resolve70' ProcedureCall='exec bspCustomCDRPostSettlementDestResolve70' StepOrder='113' IsIXBill='false'/>
+		<Step ID='54' Name='Resolve Settlement Service' ProcedureCall='exec bspCDRSettlementServiceResolve' StepOrder='114' IsIXBill='false'/>
+		<Step ID='55' Name='Resolve Settlement Product' ProcedureCall='exec bspCDRSettlementProductResolve' StepOrder='115' IsIXBill='false'/>
+		<Step ID='37' Name='Resolve Service Level' ProcedureCall='exec bspCDRServiceLevelResolve' StepOrder='116' IsIXBill='false'/>
+		<Step ID='63' Name='Generate FTRs - Cross Day' ProcedureCall='exec bspGenerateFTRsCrossDay' StepOrder='118' IsIXBill='false'/>
+		<Step ID='79' Name='Customize Prerate Resolve' ProcedureCall='exec bspCustomizePreCDRrateresolve' StepOrder='119' IsIXBill='false'/>
+		<Step ID='16' Name='Rate' ProcedureCall='exec bspFTRRate' StepOrder='120' IsIXBill='false'/>
+		<Step ID='80' Name='Customize PreTreatmentFlag Resolve' ProcedureCall='exec bspCustomizePreCDRTreatmentFlagResolve' StepOrder='124' IsIXBill='false'/>
+		<Step ID='18' Name='Set Treatment Flag' ProcedureCall='exec bspCDRTreatmentFlag' StepOrder='125' IsIXBill='true'/>
+		<Step ID='76' Name='Customize Pre Billing Statement' ProcedureCall='exec bspCustomizePreCDRCycleResolve' IsLoop='129' IsIXBill='false'/>
+		<Step ID='75' Name='Resolve Billing Statement' ProcedureCall='exec bspCDRCycleResolve' StepOrder='130' IsIXBill='true'/>
+		<Step ID='69' Name='Pre Table Assemble' ProcedureCall='exec bspCustomizePreTableAssemble' IsLoop='140' IsIXBill='false'/>
+		<Step ID='32' Name='Table Assemble'     ProcedureCall='exec bspTableAssemble' StepOrder='1000' IsIXBill='false'/>
+
+	</SubAlgorithm>
+
+
+</Algorithm>

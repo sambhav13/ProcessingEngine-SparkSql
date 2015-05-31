@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<context:annotation-config />
+
+
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+
+		<property name="location">
+			<value>classpath*:config.properties</value>
+		</property>
+	</bean>
+
+	<context:property-placeholder location="classpath:config.properties" />
+	<!-- bean definitions go here -->
+	<bean id="sparkConf" class="org.apache.spark.SparkConf">
+	</bean>
+
+	<bean id="javaSparkContext" class="org.apache.spark.api.java.JavaSparkContext">
+		<constructor-arg ref="sparkConf" />
+	</bean>
+	<bean id="sqlContext" class="org.apache.spark.sql.SQLContext">
+		<constructor-arg ref="javaSparkContext" />
+	</bean>
+
+	<bean id="dllLoader" class="com.telarix.Utilities.DLLLoader">
+	</bean>
+
+	<bean id="readCDRFile" class="com.telarix.Procedures.ProcedureUtilities.ReadCDRFile">
+	</bean>
+
+
+	<!-- Initialization for data source -->
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
+		<property name="url"
+			value="jdbc:sqlserver://Dev80-rptcdr:1433;DatabaseName=iXCDR_02" />
+		<property name="username" value="ixadmin" />
+		<property name="password" value="Admin2007" />
+	</bean>
+
+	<bean id="dataSourceSubscription"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
+		<property name="url"
+			value="jdbc:sqlserver://Dev80-rptcdr:1433;DatabaseName=iXSubscription_Main" />
+		<property name="username" value="ixadmin" />
+		<property name="password" value="Admin2007" />
+	</bean>
+
+	<bean id="dataSourceCoreServer_ixControl_Client"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${JDBC_DRIVER}" />
+		<property name="url" value="${IXCONTROL_CLIENT_URL}" />
+		<property name="username" value="ixadmin" />
+		<property name="password" value="Admin2007" />
+	</bean>
+
+	<bean id="dataSourceCoreServer_ixControl_Main"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${JDBC_DRIVER}" />
+		<property name="url" value="${IXCONTROL_MAIN_URL}" />
+		<property name="username" value="ixadmin" />
+		<property name="password" value="Admin2007" />
+	</bean>
+
+	<bean id="dataSourceCoreServer_ixAdmin_Main"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${JDBC_DRIVER}" />
+		<property name="url" value="${IXADMIN_URL}" />
+		<property name="username" value="ixadmin" />
+		<property name="password" value="Admin2007" />
+	</bean>
+
+
+	<bean id="prepareData" class="com.telarix.Utilities.PrepareData">
+		<constructor-arg name="cdr02_Dao" ref="iXCDR_02DAO" />
+	</bean>
+
+	<bean id="algorithmXMLStepsLoader" class="com.telarix.Utilities.AlgorithmXMLStepsLoader">
+	</bean>
+
+	<bean id="algoStepExecutor" class="com.telarix.CDRProcessingEngine.AlgoStepExecutor">
+		<constructor-arg name="algoXmlStepLoader" ref="algorithmXMLStepsLoader" />
+	</bean>
+
+	<bean id="trunckResolverStepCreator" class="com.telarix.Procedures.TrunckResolverStepCreator">
+	</bean>
+
+	<bean id="agreementResolverStepCreator" class="com.telarix.Procedures.AgreementResolverStepCreator">
+	</bean>
+
+
+
+	<bean id="iXCDR_02DAO" class="com.telarix.DAO.IXCDR_02DAO">
+		<constructor-arg name="dataSource" ref="dataSource" />
+	</bean>
+
+
+	<bean id="iXSubscriptionMainDAO" class="com.telarix.DAO.IXSubscriptionMainDAO">
+		<constructor-arg name="dataSourceSubscription" ref="dataSourceSubscription" />
+	</bean>
+
+
+	<bean id="iXAdmin_MainDAO" class="com.telarix.DAO.IXAdmin_MainDAO">
+		<constructor-arg name="dataSource"
+			ref="dataSourceCoreServer_ixAdmin_Main" />
+	</bean>
+
+	<bean id="sparkSqlDAOBase" class="com.telarix.DAO.SparkSqlDAOBase">
+		<property name="sc" ref="javaSparkContext" />
+		<property name="sqlContext" ref="sqlContext" />
+	</bean>
+	<bean id="iXCDR02SparkSqlDAO" parent="sparkSqlDAOBase"
+		class="com.telarix.DAO.IXCDR02SparkSqlDAO">
+		<property name="driver" value="${JDBC_DRIVER}" />
+		<property name="dbUrl" value="${IXCDR_URL}" />
+	</bean>
+	<bean id="SparkSQLDAO" parent="sparkSqlDAOBase" class="com.telarix.DAO.SparkSQLDAO">
+		<property name="driver" value="${JDBC_DRIVER}" />
+		<property name="dbUrl" value="${IXCDR_URL}" />
+	</bean>
+	<bean id="iXSubscriptionMainSparkSqlDAO" parent="sparkSqlDAOBase"
+		class="com.telarix.DAO.IXSubscriptionMainSparkSqlDAO">
+		<property name="driver" value="${JDBC_DRIVER}" />
+		<property name="dbUrl" value="${IXSUBSCRIPTION_URL}" />
+	</bean>
+
+	<bean id="iXControl_MainDAO" class="com.telarix.DAO.IXControl_MainDAO">
+		<constructor-arg name="dataSource"
+			ref="dataSourceCoreServer_ixControl_Main" />
+	</bean>
+
+	<bean id="iXControl_ClientDAO" class="com.telarix.DAO.IXControl_ClientDAO">
+		<constructor-arg name="dataSource"
+			ref="dataSourceCoreServer_ixControl_Client" />
+	</bean>
+
+	<bean id="cDRFileLoadReferenceData" class="com.telarix.LookUpData.CDRFileLoadReferenceData">
+		<constructor-arg name="iXControl_MainSparkSqlDAO" ref="iXControl_MainSparkSqlDAO" />
+		<constructor-arg name="iXControl_ClientSparkSqlDAO"
+			ref="iXControl_ClientSparkSqlDAO" />
+	</bean>
+
+	<bean id="iXControl_MainSparkSqlDAO" parent="sparkSqlDAOBase"
+		class="com.telarix.DAO.IXControl_MainSparkSqlDAO">
+		<property name="driver" value="${JDBC_DRIVER}" />
+		<property name="dbUrl" value="${IXCONTROL_MAIN_URL}" />
+	</bean>
+
+	<bean id="iXControl_ClientSparkSqlDAO" parent="sparkSqlDAOBase"
+		class="com.telarix.DAO.IXControl_ClientSparkSqlDAO">
+		<property name="driver" value="${JDBC_DRIVER}" />
+		<property name="dbUrl" value="${IXCONTROL_CLIENT_URL}" />
+	</bean>
+
+	<bean id="hashMapCreator" class="com.telarix.Utilities.HashMapCreator">
+	</bean>
+	
+	<bean id="hashMapCreatorVS" class="com.telarix.Utilities.HashMapCreatorVS">
+	</bean>
+	
+	<bean id="refDataHashMaps" class="com.telarix.Beans.RefDataHashMaps">
+	</bean>
+	
+	
+
+	<bean id="referenceDataMaps" class="com.telarix.LookUpData.ReferenceDataMaps">
+		<constructor-arg name="hmc" ref="hashMapCreator" />
+		<constructor-arg name="ixCdrSparkSql" ref="iXCDR02SparkSqlDAO" />
+		<constructor-arg name="refDatahshMaps" ref="refDataHashMaps" />
+	</bean>
+	
+	<bean id="referenceDataMapsVS" class="com.telarix.LookUpData.ReferenceDataMapsVS">
+		<constructor-arg name="hmc" ref="hashMapCreatorVS" />
+		<constructor-arg name="ixCdrSparkSql" ref="iXCDR02SparkSqlDAO" />
+		<constructor-arg name="refDatahshMaps" ref="refDataHashMaps" />
+	</bean>
+
+	<bean id="trunckResolverStepExecutor" class="com.telarix.Procedures.TrunckResolverStepExecutor">
+		<constructor-arg ref="iXCDR02SparkSqlDAO" />
+		<!-- <constructor-arg ref="iXSubscriptionMainSparkSqlDAO" /> -->
+	</bean>
+
+	<bean id="agreementResolverStepExecutor" class="com.telarix.Procedures.AgreementResolverStepExecutor">
+		<constructor-arg ref="iXCDR02SparkSqlDAO" />
+		<!-- <constructor-arg ref="iXSubscriptionMainSparkSqlDAO" /> -->
+	</bean>
+
+
+	<bean id="referenceDataFrameColl" class="com.telarix.LookUpData.ReferenceDataFrameColl">
+		<constructor-arg ref="iXCDR02SparkSqlDAO" />
+	</bean>
+
+	<bean id="callDateLoop" class="com.telarix.CDRProcessingEngine.CallDateLoop">
+	</bean>
+
+	<bean id="exportTable" class="com.telarix.Procedures.ProcedureUtilities.ExportTable">
+		<constructor-arg ref="iXCDR_02DAO"></constructor-arg>
+	</bean>
+	
+	<bean id ="cDRServiceResolve" class="com.telarix.Procedures.CDRServiceResolve">
+		<constructor-arg ref="iXSubscriptionMainSparkSqlDAO" />
+	</bean>
+	
+	<bean id ="cDRSettlementDestinationResolve_NextGen" class="com.telarix.Procedures.CDRSettlementDestinationResolve_NextGen">
+		<constructor-arg ref="iXSubscriptionMainSparkSqlDAO" />
+	</bean>
+	
+	<bean id ="bspSubAlgorithmStepCreator" class ="com.telarix.Procedures.BspSubAlgorithmStepCreator">
+	</bean>
+	
+	<bean id ="BspSubAlgorithmStepExector" class="com.telarix.Procedures.BspSubAlgorithmStepExector">
+		<constructor-arg ref="iXCDR_02DAO" />
+	</bean>
+</beans>

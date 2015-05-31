@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Algorithm ID='13' Name='International CDR File Load'>
+
+	<SubAlgorithm ID='1' Name='Import' LoopDef='0'>
+
+		<Step ID='22' Name='Global Variables' ProcedureCall='exec bspPopulateGlobalVariables' StepOrder='100' IsIXBill='true'/>
+		<Step ID='1'  Name='File Clean Up'    ProcedureCall='exec bspFileCleanup'             StepOrder='200' IsIXBill='false'/>
+		<Step ID='2'  Name='Table Clean Up'   ProcedureCall='exec bspTableCleanup'            StepOrder='300' IsIXBill='false'/>
+		<Step ID='3'  Name='Import CDR File'  ProcedureCall='exec bspFileImport'              StepOrder='400' IsIXBill='false'/>
+		<Step ID='47' Name='Trim'             ProcedureCall='exec bspFileTrim'                StepOrder='500' IsIXBill='false'/>
+		<Step ID='48' Name='Pre Standardize'  ProcedureCall='exec bspFilePreStandardize'      StepOrder='600' IsIXBill='false'/>
+		<Step ID='87' Name='Table Import'     ProcedureCall='exec bspTableImport'             StepOrder='650' IsIXBill='false'/>
+		
+	</SubAlgorithm>
+
+</Algorithm>
